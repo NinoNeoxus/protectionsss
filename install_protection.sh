@@ -1,99 +1,101 @@
 #!/bin/bash
 
-# --- SCHNUFFELLL ULTIMATE PROTECTION (9-in-1) ---
-# Script ini menggabungkan 9 layer keamanan untuk Pterodactyl Panel.
-# Semua proteksi akan dipasang sekaligus.
-# Target: Hanya ADMIN (ID 1) yang bebas akses.
+# Warna-warni biar ganteng kayak ownernya
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-PTERO_DIR="/var/www/pterodactyl"
-TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
-ADMIN_ID=1
-
-echo "================================================="
-echo "   MEMASANG 9 LAYER PROTEKSI SCHNUFFELLL..."
-echo "================================================="
-
-# Helper function buat inject
-inject_protection() {
-    local file=$1
-    local search=$2
-    local message=$3
-    
-    if [ -f "$file" ]; then
-        echo "[INFO] Memasang proteksi di $(basename $file)..."
-        cp "$file" "${file}.bak_$TIMESTAMP"
-        
-        # Cek apakah sudah terpasang buat hindari duplikat
-        if grep -q "PROTEKSI CUSTOM" "$file"; then
-             echo "   -> Proteksi sudah ada. Skip."
-        else
-             sed -i "/$search/a \\
-        // --- PROTEKSI CUSTOM ---\\
-        if (request()->user()->id !== $ADMIN_ID && \$request->user()->id !== $ADMIN_ID) {\\
-            throw new \\\\Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\HttpException(403, '$message');\\
-        }\\
-        // -----------------------" "$file"
-             echo "   -> Berhasil dipasang."
-        fi
-    else
-        echo "[SKIP] File $(basename $file) tidak ditemukan."
-    fi
-}
-
-inject_service_protection() {
-    local file=$1
-    local search=$2
-    local message=$3
-    
-    if [ -f "$file" ]; then
-        echo "[INFO] Memasang proteksi Service di $(basename $file)..."
-        cp "$file" "${file}.bak_$TIMESTAMP"
-        if grep -q "PROTEKSI CUSTOM" "$file"; then
-             echo "   -> Proteksi sudah ada. Skip."
-        else
-             sed -i "/$search/a \\
-        // --- PROTEKSI CUSTOM ---\\
-        if (auth()->user()->id !== $ADMIN_ID) {\\
-            throw new \\\\Pterodactyl\\\\Exceptions\\\\DisplayException('$message');\\
-        }\\
-        // -----------------------" "$file"
-             echo "   -> Berhasil dipasang."
-        fi
-    else
-        echo "[SKIP] File $(basename $file) tidak ditemukan."
-    fi
-}
-
-# 1. Server Controller (List Server)
-inject_protection "$PTERO_DIR/app/Http/Controllers/Api/Client/Servers/ServerController.php" "public function index" "AKSES DITOLAK! Server List Private."
-
-# 2. Server Detail Service (Edit/View Details)
-inject_service_protection "$PTERO_DIR/app/Services/Servers/DetailsModificationService.php" "public function handle" "DILARANG EDIT DETAIL SERVER!"
-
-# 3. Startup Modification (Edit Startup Cmd/Image)
-inject_service_protection "$PTERO_DIR/app/Services/Servers/StartupModificationService.php" "public function handle" "DILARANG EDIT STARTUP!"
-
-# 4. Database Controller (Create/Delete Database)
-inject_protection "$PTERO_DIR/app/Http/Controllers/Api/Client/Servers/DatabaseController.php" "public function index" "AKSES DATABASE DIBATASI!"
-
-# 5. Network/Allocation Controller (Create/Delete Ports)
-inject_protection "$PTERO_DIR/app/Http/Controllers/Api/Client/Servers/NetworkController.php" "public function index" "AKSES NETWORK DIBATASI!"
-
-# 6. File Manager Controller (List Files)
-# Hati-hati, ini bisa bikin user ga bisa manage file sendiri. Enable sbg opsi keras.
-inject_protection "$PTERO_DIR/app/Http/Controllers/Api/Client/Servers/FileController.php" "public function index" "FILE MANAGER DIKUNCI!"
-
-# 7. Schedule Controller (Jadwal Tugas)
-inject_protection "$PTERO_DIR/app/Http/Controllers/Api/Client/Servers/ScheduleController.php" "public function index" "SCHEDULE DIKUNCI!"
-
-# 8. Subuser Controller (Tambah Teman)
-inject_protection "$PTERO_DIR/app/Http/Controllers/Api/Client/Servers/SubuserController.php" "public function index" "SUBUSER DIKUNCI!"
-
-# 9. Settings/Activity Log (View Logs)
-inject_protection "$PTERO_DIR/app/Http/Controllers/Api/Client/Servers/ActivityLogController.php" "public function index" "ACTIVITY LOG PRIVATE!"
-
+clear
+echo -e "${CYAN}====================================================${NC}"
+echo -e "${CYAN}    SCHNUFFELLL PROTECTOR - FULL VERSION (1-9)      ${NC}"
+echo -e "${CYAN}       Anti Rusuh, Anti Delete, Anti Edit           ${NC}"
+echo -e "${CYAN}====================================================${NC}"
 echo ""
-echo "================================================="
-echo "   9 LAYER PROTEKSI SELESAI DIPASANG!"
-echo "   Jalankan: php artisan optimize"
-echo "================================================="
+
+# --- FUNGSI UTAMA (JANTUNG SCRIPT) ---
+pasang_proteksi() {
+    local FILE_TARGET=$1
+    local FUNGSI_TARGET=$2 # Contoh: "index" atau "handle"
+    local NAMA_FITUR=$3
+
+    echo -e "${YELLOW}🔄 Memproses Proteksi ${NAMA_FITUR}...${NC}"
+
+    # 1. Cek File Ada Gak?
+    if [ ! -f "$FILE_TARGET" ]; then
+        echo -e "${RED}❌ GAGAL: File tidak ditemukan di lokasi ini.${NC}"
+        echo -e "${RED}   -> $FILE_TARGET${NC}"
+        echo "----------------------------------------------------"
+        return
+    fi
+
+    # 2. Backup File (Wajib)
+    cp "$FILE_TARGET" "${FILE_TARGET}.bak_$(date +%F_%H-%M-%S)"
+    echo -e "${GREEN}📦 Backup file aman.${NC}"
+
+    # 3. Cek Udah Diprotek Belum?
+    if grep -q "SCHNUFFELLL-PROTECT" "$FILE_TARGET"; then
+        echo -e "${CYAN}⚠️  File ini sudah terproteksi sebelumnya. Skip.${NC}"
+    else
+        # 4. EKSEKUSI SUNTIK MATI (Inject)
+        # Logic: Cari "public function NAMA(" terus cari kurung kurawal "{" dan selipin codingan di bawahnya.
+        
+        sed -i "/public function $FUNGSI_TARGET(/,/^{/ { 
+            /^{/a \
+        \/\/ [SCHNUFFELLL-PROTECT] START\
+        if (auth()->user()->id !== 1) {\
+            abort(403, 'AKSES DITOLAK: HANYA OWNER (ID 1) YANG BOLEH AKSES ${NAMA_FITUR}.');\
+        }\
+        \/\/ [SCHNUFFELLL-PROTECT] END
+        }" "$FILE_TARGET"
+
+        echo -e "${GREEN}✅ SUKSES: ${NAMA_FITUR} berhasil dikunci untuk ID 1!${NC}"
+    fi
+    echo "----------------------------------------------------"
+}
+
+# ==========================================================
+# DAFTAR TARGET (1 SAMPAI 9 SESUAI LOG)
+# ==========================================================
+
+# 1. Anti Delete Server (Service)
+# Target: ServerDeletionService.php | Fungsi: handle
+pasang_proteksi "/var/www/pterodactyl/app/Services/Servers/ServerDeletionService.php" "handle" "1. Anti Delete Server"
+
+# 2. Anti User Controller (Admin)
+# Target: UserController.php | Fungsi: index (biar gak bisa liat list user)
+pasang_proteksi "/var/www/pterodactyl/app/Http/Controllers/Admin/UserController.php" "index" "2. Anti User Modify"
+
+# 3. Anti Location (Admin)
+# Target: LocationController.php | Fungsi: index
+pasang_proteksi "/var/www/pterodactyl/app/Http/Controllers/Admin/LocationController.php" "index" "3. Anti Location"
+
+# 4. Anti Nodes (Admin)
+# Target: NodeController.php | Fungsi: index
+pasang_proteksi "/var/www/pterodactyl/app/Http/Controllers/Admin/Nodes/NodeController.php" "index" "4. Anti Nodes"
+
+# 5. Anti Nest (Admin)
+# Target: NestController.php | Fungsi: index
+pasang_proteksi "/var/www/pterodactyl/app/Http/Controllers/Admin/Nests/NestController.php" "index" "5. Anti Nests"
+
+# 6. Anti Settings (Admin)
+# Target: IndexController.php | Fungsi: index
+pasang_proteksi "/var/www/pterodactyl/app/Http/Controllers/Admin/Settings/IndexController.php" "index" "6. Anti Settings"
+
+# 7. Anti Server File Controller (API Client)
+# Target: FileController.php | Fungsi: index
+pasang_proteksi "/var/www/pterodactyl/app/Http/Controllers/Api/Client/Servers/FileController.php" "index" "7. Anti Server Files"
+
+# 8. Anti Server Controller (API Client)
+# Target: ServerController.php | Fungsi: index
+pasang_proteksi "/var/www/pterodactyl/app/Http/Controllers/Api/Client/Servers/ServerController.php" "index" "8. Anti Server Controller"
+
+# 9. Anti Modifikasi Server (Service)
+# Target: DetailsModificationService.php | Fungsi: handle
+pasang_proteksi "/var/www/pterodactyl/app/Services/Servers/DetailsModificationService.php" "handle" "9. Anti Server Modification"
+
+# ==========================================================
+echo ""
+echo -e "${CYAN}🎉 SEMUA PROSES SELESAI! SILAKAN CEK HASILNYA. 🎉${NC}"
+echo -e "${CYAN}   Admin ID 1 Aman, Admin Lain Nangis.           ${NC}"
