@@ -4,11 +4,11 @@ REMOTE_PATH="/var/www/pterodactyl/app/Services/Servers/ServerDeletionService.php
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi Anti Delete Server..."
+echo "ðŸš€ Memasang proteksi Anti Delete Server..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -62,7 +62,7 @@ class ServerDeletionService
     {
         $user = Auth::user();
 
-        // 🔒 Proteksi: hanya Admin ID = 1 boleh menghapus server siapa saja.
+        // ðŸ”’ Proteksi: hanya Admin ID = 1 boleh menghapus server siapa saja.
         // Selain itu, user biasa hanya boleh menghapus server MILIKNYA SENDIRI.
         // Jika tidak ada informasi pemilik dan pengguna bukan admin, tolak.
         if ($user) {
@@ -74,12 +74,12 @@ class ServerDeletionService
                     ?? ($server->user?->id ?? null);
 
                 if ($ownerId === null) {
-                    // Tidak jelas siapa pemiliknya — jangan izinkan pengguna biasa menghapus.
+                    // Tidak jelas siapa pemiliknya â€” jangan izinkan pengguna biasa menghapus.
                     throw new DisplayException('Akses ditolak: informasi pemilik server tidak tersedia.');
                 }
 
                 if ($ownerId !== $user->id) {
-                    throw new DisplayException('WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+                    throw new DisplayException('JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL');
                 }
             }
             // jika $user->id === 1, lanjutkan (admin super)
@@ -120,22 +120,22 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "✅ Proteksi Anti Delete Server berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "🔒 Hanya Admin (ID 1) yang bisa hapus server lain."
+echo "âœ… Proteksi Anti Delete Server berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "ðŸ”’ Hanya Admin (ID 1) yang bisa hapus server lain."
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Http/Controllers/Admin/UserController.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi UserController.php anti hapus dan anti ubah data user..."
+echo "ðŸš€ Memasang proteksi UserController.php anti hapus dan anti ubah data user..."
 
 # Backup file lama jika ada
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -234,7 +234,7 @@ class UserController extends Controller
     {
         // === FITUR TAMBAHAN: Proteksi hapus user ===
         if ($request->user()->id !== 1) {
-            throw new DisplayException("WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll");
+            throw new DisplayException("JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL");
         }
         // ============================================
 
@@ -274,13 +274,13 @@ class UserController extends Controller
 
         foreach ($restrictedFields as $field) {
             if ($request->filled($field) && $request->user()->id !== 1) {
-                throw new DisplayException("WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll");
+                throw new DisplayException("JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL");
             }
         }
 
         // Cegah turunkan level admin ke user biasa
         if ($user->root_admin && $request->user()->id !== 1) {
-            throw new DisplayException("WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll");
+            throw new DisplayException("JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL");
         }
         // ====================================================
 
@@ -318,20 +318,20 @@ class UserController extends Controller
 EOF
 
 chmod 644 "$REMOTE_PATH"
-echo "✅ Proteksi UserController.php berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH"
+echo "âœ… Proteksi UserController.php berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH"
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Http/Controllers/Admin/LocationController.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi Anti Akses Location..."
+echo "ðŸš€ Memasang proteksi Anti Akses Location..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -376,10 +376,10 @@ class LocationController extends Controller
      */
     public function index(): View
     {
-        // 🔒 Cegah akses selain admin ID 1
+        // ðŸ”’ Cegah akses selain admin ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH LOCATION GUA😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN NGINTIP PUKI! PROTECT BY SCHNUFFELLL');
         }
 
         return $this->view->make('admin.locations.index', [
@@ -394,10 +394,10 @@ class LocationController extends Controller
      */
     public function view(int $id): View
     {
-        // 🔒 Cegah akses selain admin ID 1
+        // ðŸ”’ Cegah akses selain admin ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH LOCATION GUA😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN NGINTIP PUKI! PROTECT BY SCHNUFFELLL');
         }
 
         return $this->view->make('admin.locations.view', [
@@ -412,10 +412,10 @@ class LocationController extends Controller
      */
     public function create(LocationFormRequest $request): RedirectResponse
     {
-        // 🔒 Cegah akses selain admin ID 1
+        // ðŸ”’ Cegah akses selain admin ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL');
         }
 
         $location = $this->creationService->handle($request->normalize());
@@ -431,10 +431,10 @@ class LocationController extends Controller
      */
     public function update(LocationFormRequest $request, Location $location): RedirectResponse
     {
-        // 🔒 Cegah akses selain admin ID 1
+        // ðŸ”’ Cegah akses selain admin ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL');
         }
 
         if ($request->input('action') === 'delete') {
@@ -455,10 +455,10 @@ class LocationController extends Controller
      */
     public function delete(Location $location): RedirectResponse
     {
-        // 🔒 Cegah akses selain admin ID 1
+        // ðŸ”’ Cegah akses selain admin ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL');
         }
 
         try {
@@ -475,21 +475,21 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "✅ Proteksi Anti Akses Location berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "🔒 Hanya Admin (ID 1) yang bisa hapus server lain."
+echo "âœ… Proteksi Anti Akses Location berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "ðŸ”’ Hanya Admin (ID 1) yang bisa hapus server lain."
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Http/Controllers/Admin/Nodes/NodeController.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi Anti Akses Nodes..."
+echo "ðŸš€ Memasang proteksi Anti Akses Nodes..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -506,7 +506,7 @@ use Pterodactyl\Models\Node;
 use Spatie\QueryBuilder\QueryBuilder;
 use Pterodactyl\Http\Controllers\Controller;
 use Illuminate\Contracts\View\Factory as ViewFactory;
-use Illuminate\Support\Facades\Auth; // ✅ tambahan untuk ambil user login
+use Illuminate\Support\Facades\Auth; // âœ… tambahan untuk ambil user login
 
 class NodeController extends Controller
 {
@@ -522,10 +522,10 @@ class NodeController extends Controller
      */
     public function index(Request $request): View
     {
-        // === 🔒 FITUR TAMBAHAN: Anti akses selain admin ID 1 ===
+        // === ðŸ”’ FITUR TAMBAHAN: Anti akses selain admin ID 1 ===
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH NODE GUA😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN NGINTIP PUKI! PROTECT BY SCHNUFFELLL');
         }
         // ======================================================
 
@@ -543,21 +543,21 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "✅ Proteksi Anti Akses Nodes berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "🔒 Hanya Admin (ID 1) yang bisa Akses Nodes."
+echo "âœ… Proteksi Anti Akses Nodes berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "ðŸ”’ Hanya Admin (ID 1) yang bisa Akses Nodes."
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Http/Controllers/Admin/Nests/NestController.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi Anti Akses Nest..."
+echo "ðŸš€ Memasang proteksi Anti Akses Nest..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -578,7 +578,7 @@ use Pterodactyl\Services\Nests\NestCreationService;
 use Pterodactyl\Services\Nests\NestDeletionService;
 use Pterodactyl\Contracts\Repository\NestRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Nest\StoreNestFormRequest;
-use Illuminate\Support\Facades\Auth; // ✅ Tambahan
+use Illuminate\Support\Facades\Auth; // âœ… Tambahan
 
 class NestController extends Controller
 {
@@ -602,10 +602,10 @@ class NestController extends Controller
      */
     public function index(): View
     {
-        // 🔒 Proteksi: hanya user ID 1 (superadmin) yang bisa akses menu Nest
+        // ðŸ”’ Proteksi: hanya user ID 1 (superadmin) yang bisa akses menu Nest
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN NGINTIP PUKI! PROTECT BY SCHNUFFELLL');
         }
 
         return $this->view->make('admin.nests.index', [
@@ -677,21 +677,21 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "✅ Proteksi Anti Akses Nest berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "🔒 Hanya Admin (ID 1) yang bisa Akses Nest."
+echo "âœ… Proteksi Anti Akses Nest berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "ðŸ”’ Hanya Admin (ID 1) yang bisa Akses Nest."
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Http/Controllers/Admin/Settings/IndexController.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi Anti Akses Settings..."
+echo "ðŸš€ Memasang proteksi Anti Akses Settings..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -735,10 +735,10 @@ class IndexController extends Controller
      */
     public function index(): View
     {
-        // 🔒 Anti akses menu Settings selain user ID 1
+        // ðŸ”’ Anti akses menu Settings selain user ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN NGINTIP PUKI! PROTECT BY SCHNUFFELLL');
         }
 
         return $this->view->make('admin.settings.index', [
@@ -755,10 +755,10 @@ class IndexController extends Controller
      */
     public function update(BaseSettingsFormRequest $request): RedirectResponse
     {
-        // 🔒 Anti akses update settings selain user ID 1
+        // ðŸ”’ Anti akses update settings selain user ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL');
         }
 
         foreach ($request->normalize() as $key => $value) {
@@ -777,21 +777,21 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "✅ Proteksi Anti Akses Settings berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "🔒 Hanya Admin (ID 1) yang bisa Akses Settings."
+echo "âœ… Proteksi Anti Akses Settings berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "ðŸ”’ Hanya Admin (ID 1) yang bisa Akses Settings."
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Http/Controllers/Api/Client/Servers/FileController.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi Anti Akses Server File Controller..."
+echo "ðŸš€ Memasang proteksi Anti Akses Server File Controller..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -833,7 +833,7 @@ class FileController extends ClientApiController
     }
 
     /**
-     * 🔒 Fungsi tambahan: Cegah akses server orang lain.
+     * ðŸ”’ Fungsi tambahan: Cegah akses server orang lain.
      */
     private function checkServerAccess($request, Server $server)
     {
@@ -846,7 +846,7 @@ class FileController extends ClientApiController
 
         // Jika server bukan milik user, tolak akses
         if ($server->owner_id !== $user->id) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN RUSUH FILE GUA ANJING! PROTECT BY SCHNUFFELLL');
         }
     }
 
@@ -1049,21 +1049,21 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "✅ Proteksi Anti Akses Server File Controller berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "🔒 Hanya Admin (ID 1) yang bisa Akses Server File Controller."
+echo "âœ… Proteksi Anti Akses Server File Controller berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "ðŸ”’ Hanya Admin (ID 1) yang bisa Akses Server File Controller."
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Http/Controllers/Api/Client/Servers/ServerController.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "ðŸš€ Memasang proteksi Anti Akses Server Controller..."
+echo "Ã°Å¸Å¡â‚¬ Memasang proteksi Anti Akses Server Controller..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
+  echo "Ã°Å¸â€œÂ¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -1097,11 +1097,11 @@ class ServerController extends ClientApiController
      */
     public function index(GetServerRequest $request, Server $server): array
     {
-        // 🔒 Anti intip server orang lain (kecuali admin ID 1)
+        // ðŸ”’ Anti intip server orang lain (kecuali admin ID 1)
         $authUser = Auth::user();
 
         if ($authUser->id !== 1 && (int) $server->owner_id !== (int) $authUser->id) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN NGINTIP PUKI! PROTECT BY SCHNUFFELLL');
         }
 
         return $this->fractal->item($server)
@@ -1117,21 +1117,21 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "âœ… Proteksi Anti Akses Server Controller berhasil dipasang!"
-echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
-echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "ðŸ”’ Hanya Admin (ID 1) yang bisa Akses Server Controller."
+echo "Ã¢Å“â€¦ Proteksi Anti Akses Server Controller berhasil dipasang!"
+echo "Ã°Å¸â€œâ€š Lokasi file: $REMOTE_PATH"
+echo "Ã°Å¸â€”â€šÃ¯Â¸Â Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "Ã°Å¸â€â€™ Hanya Admin (ID 1) yang bisa Akses Server Controller."
 #!/bin/bash
 
 REMOTE_PATH="/var/www/pterodactyl/app/Services/Servers/DetailsModificationService.php"
 TIMESTAMP=$(date -u +"%Y-%m-%d-%H-%M-%S")
 BACKUP_PATH="${REMOTE_PATH}.bak_${TIMESTAMP}"
 
-echo "🚀 Memasang proteksi Anti Modifikasi Server..."
+echo "ðŸš€ Memasang proteksi Anti Modifikasi Server..."
 
 if [ -f "$REMOTE_PATH" ]; then
   mv "$REMOTE_PATH" "$BACKUP_PATH"
-  echo "📦 Backup file lama dibuat di $BACKUP_PATH"
+  echo "ðŸ“¦ Backup file lama dibuat di $BACKUP_PATH"
 fi
 
 mkdir -p "$(dirname "$REMOTE_PATH")"
@@ -1166,10 +1166,10 @@ class DetailsModificationService
      */
     public function handle(Server $server, array $data): Server
     {
-        // 🚫 Batasi akses hanya untuk user ID 1
+        // ðŸš« Batasi akses hanya untuk user ID 1
         $user = Auth::user();
         if (!$user || $user->id !== 1) {
-            abort(403, 'WKWK SI BEGO MAU RUSUH😹 PROTECT BY @schnuffelll');
+            abort(403, 'JANGAN MALING SCRIPT ANJING! PROTECT BY SCHNUFFELLL');
         }
 
         return $this->connection->transaction(function () use ($data, $server) {
@@ -1199,8 +1199,7 @@ EOF
 
 chmod 644 "$REMOTE_PATH"
 
-echo "✅ Proteksi Anti Modifikasi Server berhasil dipasang!"
-echo "📂 Lokasi file: $REMOTE_PATH"
-echo "🗂️ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
-echo "🔒 Hanya Admin (ID 1) yang bisa Modifikasi Server."
-
+echo "âœ… Proteksi Anti Modifikasi Server berhasil dipasang!"
+echo "ðŸ“‚ Lokasi file: $REMOTE_PATH"
+echo "ðŸ—‚ï¸ Backup file lama: $BACKUP_PATH (jika sebelumnya ada)"
+echo "ðŸ”’ Hanya Admin (ID 1) yang bisa Modifikasi Server."
